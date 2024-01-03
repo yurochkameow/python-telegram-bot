@@ -1,0 +1,33 @@
+from telegram import Update
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+
+# Функция обработки команды /start
+def start(update: Update, context: CallbackContext) -> None:
+    update.message.reply_text('Привет! Я готов принимать заявки. Пожалуйста, отправьте мне свою заявку.')
+
+# Функция обработки входящих сообщений
+def handle_request(update: Update, context: CallbackContext) -> None:
+    # Получаем текст из сообщения
+    user_request = update.message.text
+    # Отправляем заявку в ваше личное сообщение
+    context.bot.send_message(chat_id='YOUR_USER_ID', text=f'Новая заявка: {user_request}')
+
+def main() -> None:
+    # Инициализация бота
+    updater = Updater("YOUR_TELEGRAM_BOT_TOKEN")
+    dispatcher = updater.dispatcher
+
+    # Добавляем обработчики команд
+    start_handler = CommandHandler('start', start)
+    dispatcher.add_handler(start_handler)
+
+    # Добавляем обработчик входящих сообщений
+    message_handler = MessageHandler(Filters.text & (~Filters.command), handle_request)
+    dispatcher.add_handler(message_handler)
+
+    # Запускаем бота
+    updater.start_polling()
+    updater.idle()
+
+if __name__ == '__main__':
+    main()
